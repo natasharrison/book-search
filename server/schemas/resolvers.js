@@ -57,7 +57,7 @@ const resolvers = {
 
         await User.findByIdandUpdate(
           { _id: context.user._id },
-          { $push: { thoughts: thought._id } },
+          { $push: { books: books._id } },
           { new: true }
         );
 
@@ -74,7 +74,7 @@ const resolvers = {
 
         await User.findByIdandUpdate(
           { _id: context.user._id },
-          { $pull: { thoughts: thought._id } },
+          { $pull: { books: books._id } },
           { new: false }
         );
 
