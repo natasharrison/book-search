@@ -7,44 +7,41 @@ import LoginForm from '.src/components/LoginForm';
 import Navbar from '.src/components/Navbar';
 import SignupForm from './src/components/SignupForm';
 
-import savedBooks from './src/pages/SavedBooks';
 import SearchBooks from './src/pages/SearchBooks';
+import SavedBooks from './src/pages/SavedBooks';
 
 const client = new ApolloClient({
-  request: operation => {
-    const token = localStorage.getItem('id_token');
+    request: operation => {
+        const token = localStorage.getItem('id_token');
 
-    operation.setContext({
-      headers: {
-        authorization: token ? `Bearer ${token}` : ''
-      }
-    });
-  },
-  uri: '/graphql'
+        operation.setContext({
+            headers: {
+                authorization: token ? `Bearer ${token}` : ''
+            }
+        });
+    },
+    uri: '/graphql'
 });
 
 function App() {
-  return (
-    <ApolloProvider client={client}>
-      <Router>
-        <div className="flex-column justify-flex-start min-100-vh">
-          <Header />
-          <div className="container">
-            <Switch>
-              <Route exact path="/" component={Home} />
-              <Route exact path="/login" component={Login} />
-              <Route exact path="/signup" component={Signup} />
-              <Route exact path="/profile/:username?" component={Profile} />
-              <Route exact path="/thought/:id" component={SingleThought} />
-
-              <Route component={NoMatch} />
-            </Switch>
-          </div>
-          <Footer />
-        </div>
-      </Router>
-    </ApolloProvider>
-  );
+    return (
+        <ApolloProvider client={client}>
+            <Router>
+                <div className="flex-column justify-flex-start min-100-vh">
+                    <Header />
+                    <Navbar></Navbar>
+                    <div className="container">
+                        <Switch>
+                            <Route exact path="/" component={SearchBooks} />
+                            <Route exact path="/login" component={LoginForm} />
+                            <Route exact path="/signup" component={SignupForm} />
+                            <Route exact path="/profile/:username?" component={SavedBooks} />
+                        </Switch>
+                    </div>
+                </div>
+            </Router>
+        </ApolloProvider>
+    );
 }
 
 export default App;
