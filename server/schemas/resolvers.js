@@ -1,6 +1,7 @@
 // import user model
 const { AuthenticationError } = require('apollo-server-express');
-const { User } = require('../models');
+// I'm not using the Book model anywhere - how and where do I incorporate it?
+const { User, Book } = require('../models');
 const bookSchema = require('../models/Book');
 // import sign token function from auth
 const { signToken } = require('../utils/auth');
