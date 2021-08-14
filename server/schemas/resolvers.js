@@ -11,10 +11,6 @@ const { signToken } = require('../utils/auth');
 const resolvers = {
 
   Query: {
-    // get a single user by username
-    user: async (parent, { username }) => {
-      return User.findOne({ username })
-    },
     //    get a single user by user id
     me: async (parent, args, context) => {
       if (context.user) {
@@ -26,7 +22,7 @@ const resolvers = {
 
   Mutation: {
 
-    createUser: async (parent, args) => {
+    addUser: async (parent, args) => {
       const user = await User.create(args);
       const token = signToken(user);
 
@@ -69,7 +65,7 @@ const resolvers = {
     },
 
     // remove a book from `savedBooks`
-    deleteBook: async (parent, args, context) => {
+    removeBook: async (parent, args, context) => {
       if (context.user) {
         const savedBooks = await bookSchema.create({ ...args, username: context.user.username });
 
