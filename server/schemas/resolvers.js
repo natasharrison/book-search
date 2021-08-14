@@ -10,81 +10,80 @@ const { signToken } = require('../utils/auth');
 const resolvers = {
 
   Query: {
-// get a single user by username
-  user: async(parent, {username}) => {
-      return User.findOne({username})
-  },
-//    get a single user by user id
- me: async (parent, args, context) => {
+    // get a single user by username
+    user: async (parent, { username }) => {
+      return User.findOne({ username })
+    },
+    //    get a single user by user id
+    me: async (parent, args, context) => {
       if (context.user) {
         const userData = await User.findOne({ _id: context.user._id });
         return userData;
       }
     },
-},
+  },
 
-Mutation: {
+  Mutation: {
 
-createUser: async (parent, args) => {
-    const user = await User.create(args);
-    const token = signToken(user);
+    createUser: async (parent, args) => {
+      const user = await User.create(args);
+      const token = signToken(user);
 
-    return { token, user };
-},
+      return { token, user };
+    },
 
-login: async (parent, { email, password }) => {
-    const user = await User.findOne({ email });
+    login: async (parent, { email, password }) => {
+      const user = await User.findOne({ email });
 
-    if (!user) {
+      if (!user) {
         throw new AuthenticationError('Unable to find user');
-    }
+      }
 
-    const correctPw = await user.isCorrectPassword(password);
+      const correctPw = await user.isCorrectPassword(password);
 
-    if (!correctPw) {
+      if (!correctPw) {
         throw new AuthenticationError('Incorrect password');
-    }
+      }
 
-    const token = signToken(user);
-    return { token, user };
-}, 
+      const token = signToken(user);
+      return { token, user };
+    },
 
-  // save a book to a user's `savedBooks` field by adding it to the set (to prevent duplicates)
-  // user comes from `req.user` created in the auth middleware function
-saveBook: async (parent, args, context) => {
-    if (context.user) {
-        const savedBooks = await bookSchema.create({ ...args, username: context.user.username});
+    // save a book to a user's `savedBooks` field by adding it to the set (to prevent duplicates)
+    // user comes from `req.user` created in the auth middleware function
+    saveBook: async (parent, args, context) => {
+      if (context.user) {
+        const savedBooks = await bookSchema.create({ ...args, username: context.user.username });
 
         await User.findByIdandUpdate(
-            {_id: context.user._id},
-            { $push: { thoughts: thought._id } },
-            { new: true }
+          { _id: context.user._id },
+          { $push: { thoughts: thought._id } },
+          { new: true }
         );
 
         return savedBooks;
+      }
+
+      throw new AuthenticationError('You need to be logged in!');
+    },
+
+    // remove a book from `savedBooks`
+    deleteBook: async (parent, args, context) => {
+      if (context.user) {
+        const savedBooks = await bookSchema.create({ ...args, username: context.user.username });
+
+        await User.findByIdandUpdate(
+          { _id: context.user._id },
+          { $pull: { thoughts: thought._id } },
+          { new: false }
+        );
+
+        return savedBooks;
+      }
+
+      throw new AuthenticationError('You need to be logged in!');
     }
-
-    throw new AuthenticationError('You need to be logged in!');
-}, 
-// remove a book from `savedBooks`
-deleteBook: async (parent, args, contect)
-
-
-
+  }
+};
 
 module.exports = resolvers;
-
-
-  
-  async deleteBook({ user, params }, res) {
-    const updatedUser = await User.findOneAndUpdate(
-      { _id: user._id },
-      { $pull: { savedBooks: { bookId: params.bookId } } },
-      { new: true }
-    );
-    if (!updatedUser) {
-      return res.status(404).json({ message: "Couldn't find user with this id!" });
-    }
-    return res.json(updatedUser);
-  },
-
