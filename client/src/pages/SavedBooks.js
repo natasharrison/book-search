@@ -8,7 +8,7 @@ import { REMOVE_BOOK } from '../utils/mutations';
 import { useMutation } from '@apollo/client';
 
 const SavedBooks = () => {
-  const [userData ] = useState({});
+  const [ userData ] = useState({});
 
   // use this to determine if `useEffect()` hook needs to run again
   const userDataLength = Object.keys(userData).length;
